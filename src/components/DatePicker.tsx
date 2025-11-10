@@ -64,7 +64,11 @@ export function DatePicker({
       `[data-date-item="${selectedIso}"]`
     );
     if (target) {
-      target.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      target.scrollIntoView({
+        behavior: 'smooth',
+        inline: 'center',
+        block: 'nearest',
+      });
     }
   }, [selectedIso]);
 
