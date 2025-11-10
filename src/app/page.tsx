@@ -43,7 +43,7 @@ export default function Home() {
     <main className='h-screen sm:flex sm:items-center sm:justify-center sm:p-4'>
       <section className='relative sm:hidden h-70  font-sans px-5 flex flex-col justify-center align-middle'>
         <Image
-          src={'/bg-mobile.svg'}
+          src={'bg-mobile.svg'}
           height={327}
           width={201}
           alt=''
@@ -52,7 +52,7 @@ export default function Home() {
         <h2 className='text-3xl font-sans'>Cool session</h2>
         <p className='font-light font-sans'>Additional type</p>
         <div className='rounded-full font-light text-xs bg-[rgba(255,255,255,0.2)] p-2 w-auto self-start flex gap-1 items-center mt-5'>
-          <Image src='/icons/clock.svg' alt='' width={16} height={16} />
+          <Image src='icons/clock.svg' alt='' width={16} height={16} />
           30 mins
         </div>
       </section>
