@@ -1,21 +1,18 @@
 import type { NextConfig } from 'next';
 
-const isProd = process.env.NODE_ENV === 'production';
-const prefix = isProd ? '/6047_test_task' : '';
-
 const nextConfig: NextConfig = {
-  reactStrictMode: true,
-
-  basePath: prefix,
-  assetPrefix: prefix ? `${prefix}/` : undefined,
-
+  basePath: '/6047_test_task',
   images: {
-    unoptimized: isProd,
-    path: `${prefix}/_next/image`,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+    ],
   },
-
-  output: 'export',
-  trailingSlash: true,
+  turbopack: {
+    root: process.cwd(),
+  },
 };
 
 export default nextConfig;
