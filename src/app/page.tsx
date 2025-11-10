@@ -52,7 +52,12 @@ export default function Home() {
         <h2 className='text-3xl font-sans'>Cool session</h2>
         <p className='font-light font-sans'>Additional type</p>
         <div className='rounded-full font-light text-xs bg-[rgba(255,255,255,0.2)] p-2 w-auto self-start flex gap-1 items-center mt-5'>
-          <Image src='/icons/clock.svg' alt='' width={16} height={16} />
+          <Image
+            src='/6047_test_task/icons/clock.svg'
+            alt=''
+            width={16}
+            height={16}
+          />
           30 mins
         </div>
       </section>
