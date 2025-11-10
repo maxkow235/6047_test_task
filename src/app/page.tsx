@@ -40,22 +40,35 @@ export default function Home() {
   };
 
   return (
-    <main className='h-screen flex items-center justify-center'>
-      <div className='relative max-w-142 h-full max-h-155 rounded-2xl bg-white p-6 py-10 text-slate-900 '>
-        <section className='mx-auto flex flex-auto w-full h-full max-w-4xl flex-col gap-10'>
-          <header className='space-y-2 flex gap-6 px-8 items-center'>
+    <main className='h-screen sm:flex sm:items-center sm:justify-center sm:p-4'>
+      <section className='relative sm:hidden h-70  font-sans px-5 flex flex-col justify-center align-middle'>
+        <Image
+          src={'/bg-mobile.svg'}
+          height={327}
+          width={201}
+          alt=''
+          className='absolute -z-50 right-0 -bottom-10'
+        />
+        <h2 className='text-3xl font-sans'>Cool session</h2>
+        <p className='font-light font-sans'>Additional type</p>
+        <div className='rounded-full font-light text-xs bg-[rgba(255,255,255,0.2)] p-2 w-auto self-start flex gap-1 items-center mt-5'>
+          <Image src='/icons/clock.svg' alt='' width={16} height={16} />
+          30 mins
+        </div>
+      </section>
+      <section className='w-full md:max-w-142 h-130 sm:h-full sm:max-h-155 rounded-t-2xl sm:rounded-2xl bg-white sm:p-6 sm:py-10 p-4 py-5 -mt-[10px] sm:mt-0 text-slate-900 '>
+        <section className='flex flex-col sm:gap-10 gap-5'>
+          <header className='space-y-2 flex gap-6 sm:px-8 items-center'>
             <Image
               src='/avatar.svg'
               alt='Avatar'
-              width={96}
-              height={96}
+              width={120}
+              height={120}
               priority
-              className='rounded-full bg-white/60 p-2'
+              className='rounded-full bg-white/60 hidden sm:block'
             />
             <div className='flex flex-col justify-center'>
-              <h1 className='text-3xl font-[var(--font-kaisei)]'>
-                Book a Session
-              </h1>
+              <h1 className='text-3xl font-serif'>Book a Session</h1>
               <p className='text-gray-600 font-light text-md antialiased'>
                 Choose a date and time that is convenient for you to e-meet your
                 stylist
@@ -78,18 +91,18 @@ export default function Home() {
             />
           </section>
 
-          <section className='flex justify-center mt-auto'>
+          <section className='flex align-middle justify-center mt-au'>
             <button
               type='button'
               onClick={handleConfirm}
               disabled={!selectedSlotTimestamp}
-              className='h-12 w-full max-w-80 rounded-full bg-[var(--button-surface-active,_rgba(22,23,27,1))] text-base font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40'
+              className='h-12 w-full max-w-90 rounded-full bg-[rgba(22,23,27,1)] text-base font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40'
             >
               Confirm
             </button>
           </section>
         </section>
-      </div>
+      </section>
     </main>
   );
 }

@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Cool Session Booking
 
-## Getting Started
+Responsive booking flow built with Next.js 15 (App Router) and TypeScript. The UI mirrors the provided design: a hero card on the left and a booking card on the right that lets visitors pick a date within the next six weeks, choose a 15-minute slot in 12-hour format, and confirm the reservation. The selected slot is logged to the browser console as a Unix timestamp (example: `{ timestamp: 1714583670 }`).
 
-First, run the development server:
+## Why these tools?
+
+- **Next.js 15 + React 19 RC** – Latest App Router features, great DX, effortless deployment to Vercel.
+- **TypeScript** – Static typing keeps the date/time logic honest.
+- **Tailwind CSS** – Rapidly recreates the Figma visuals while keeping the bundle lean.
+- **date-fns** – Lightweight utilities for generating the six-week window and formatting 12-hour times, without touching heavy moment-style libraries.
+
+## Getting started
 
 ```bash
+# install dependencies
+npm install
+
+# start dev server (http://localhost:3000)
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The booking logic lives in `src/app/page.tsx` and styles are handled via Tailwind utilities declared in `src/app/globals.css`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Available scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command         | Description                                 |
+| --------------- | ------------------------------------------- |
+| `npm run dev`   | Starts Next.js in development mode          |
+| `npm run build` | Creates an optimized production build       |
+| `npm run start` | Runs the built app locally (after build)    |
+| `npm run lint`  | Checks the project with ESLint/Airbnb rules |
 
-## Learn More
+## Deployment
 
-To learn more about Next.js, take a look at the following resources:
+1. **Vercel (recommended)**  
+   - Push the repo to GitHub.  
+   - In Vercel, “Import Project”, select the repo, keep defaults (`npm run build` / `npm run start`).  
+   - Each push to `main` redeploys automatically.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. **GitHub Pages or any static host** (app is fully static)  
+   - Run `npm run build && npx next export`.  
+   - Deploy the generated `out` directory (e.g., with GitHub Pages via the `gh-pages` branch).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Verification checklist
 
-## Deploy on Vercel
+- [x] Six-week rolling calendar with weekday labels.  
+- [x] Time slots unlocked only after choosing a date; 15-minute cadence, 12-hour format.  
+- [x] Past slots are disabled based on the user’s current time.  
+- [x] “Confirm” activates after selecting both a date and time and logs the Unix timestamp.  
+- [x] Fully responsive layout (iPhone SE → 4K).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Happy booking! 🚀
