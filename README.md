@@ -10,3 +10,5 @@
    `
 3. Open http://localhost:3000 in your browser.
 
+GH Pages Link: https://maxkow235.github.io/6047_test_task/
+
