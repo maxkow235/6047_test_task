@@ -1,5 +1,5 @@
-import { format } from 'date-fns';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { format, isSameDay, set } from 'date-fns';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowButton } from '@/components/ArrowButton';
 import { useHorizontalScroll } from '@/hooks/useHorizontalScroll';
 import type { DateOption } from '@/lib/schedule';
@@ -10,21 +10,47 @@ type DatePickerProps = {
   onSelect: (iso: string) => void;
 };
 
+const WORKDAY_END_HOUR = 18;
+
 export function DatePicker({
   options,
   selectedIso,
   onSelect,
 }: DatePickerProps) {
+  const currentTimestamp = useMemo(() => Date.now(), []);
+  const filteredOptions = useMemo(() => {
+    if (options.length === 0) return options;
+
+    const now = new Date(currentTimestamp);
+    const workdayEnd = set(now, {
+      hours: WORKDAY_END_HOUR,
+      minutes: 0,
+      seconds: 0,
+      milliseconds: 0,
+    });
+
+    if (now.getTime() < workdayEnd.getTime()) {
+      return options;
+    }
+
+    return options.filter((option) => !isSameDay(option.date, now));
+  }, [options, currentTimestamp]);
+
   const trackRef = useRef<HTMLDivElement | null>(null);
-  const scroll = useHorizontalScroll(trackRef, [options.length]);
+  const scroll = useHorizontalScroll(trackRef, [filteredOptions.length]);
   const [visibleMonth, setVisibleMonth] = useState(() =>
-    options[0] ? format(options[0].date, 'LLL') : ''
+    filteredOptions[0] ? format(filteredOptions[0].date, 'LLL') : ''
   );
 
   const updateVisibleMonth = useCallback(() => {
+    if (filteredOptions.length === 0) {
+      setVisibleMonth('');
+      return;
+    }
+
     const container = trackRef.current;
-    if (!container || options.length === 0) {
-      setVisibleMonth(options[0] ? format(options[0].date, 'LLL') : '');
+    if (!container) {
+      setVisibleMonth(format(filteredOptions[0].date, 'LLL'));
       return;
     }
 
@@ -37,13 +63,15 @@ export function DatePicker({
       const el = items[index];
       const elementRight = el.offsetLeft + el.offsetWidth;
       if (elementRight - scrollLeft > 0) {
-        setVisibleMonth(format(options[index].date, 'LLL'));
+        setVisibleMonth(format(filteredOptions[index].date, 'LLL'));
         return;
       }
     }
 
-    setVisibleMonth(format(options[options.length - 1].date, 'LLL'));
-  }, [options]);
+    setVisibleMonth(
+      format(filteredOptions[filteredOptions.length - 1].date, 'LLL')
+    );
+  }, [filteredOptions]);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(updateVisibleMonth);
@@ -88,7 +116,7 @@ export function DatePicker({
           ref={trackRef}
           className='no-scrollbar flex w-full gap-3 overflow-x-auto px-1 py-2'
         >
-          {options.map((option) => {
+          {filteredOptions.map((option) => {
             const isSelected = option.iso === selectedIso;
             const baseClasses =
               'flex h-[64px] min-w-[64px] flex-col items-center justify-center rounded-[8px] text-center transition';
