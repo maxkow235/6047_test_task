@@ -1,65 +1,95 @@
-import Image from "next/image";
+'use client';
 
+import Image from 'next/image';
+import { startOfToday } from 'date-fns';
+import { useMemo, useState } from 'react';
+import { DatePicker } from '@/components/DatePicker';
+import { TimePicker } from '@/components/TimePicker';
+import { getDateOptions, getTimeSlots } from '@/lib/schedule';
 export default function Home() {
+  const today = useMemo(() => startOfToday(), []);
+  const dateOptions = useMemo(() => getDateOptions(today), [today]);
+
+  const [selectedDateIso, setSelectedDateIso] = useState('');
+  const [selectedSlotTimestamp, setSelectedSlotTimestamp] = useState<
+    number | null
+  >(null);
+  const [nowTimestamp] = useState(() => Date.now());
+
+  const selectedDate =
+    dateOptions.find((option) => option.iso === selectedDateIso)?.date ?? null;
+
+  const availableSlots = useMemo(() => {
+    const slots = getTimeSlots(selectedDate);
+    return slots.filter((slot) => slot.getTime() > nowTimestamp);
+  }, [selectedDate, nowTimestamp]);
+
+  const handleDateSelect = (iso: string) => {
+    setSelectedDateIso(iso);
+    setSelectedSlotTimestamp(null);
+  };
+
+  const handleTimeSelect = (timestamp: number) => {
+    setSelectedSlotTimestamp(timestamp);
+  };
+
+  const handleConfirm = () => {
+    if (!selectedSlotTimestamp) return;
+    const timestamp = Math.floor(selectedSlotTimestamp / 1000);
+    console.log({ timestamp });
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+    <main className='h-screen flex items-center justify-center'>
+      <div className='relative max-w-142 h-full max-h-155 rounded-2xl bg-white p-6 py-10 text-slate-900 '>
+        <section className='mx-auto flex flex-auto w-full h-full max-w-4xl flex-col gap-10'>
+          <header className='space-y-2 flex gap-6 px-8 items-center'>
             <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+              src='/avatar.svg'
+              alt='Avatar'
+              width={96}
+              height={96}
+              priority
+              className='rounded-full bg-white/60 p-2'
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+            <div className='flex flex-col justify-center'>
+              <h1 className='text-3xl font-[var(--font-kaisei)]'>
+                Book a Session
+              </h1>
+              <p className='text-gray-600 font-light text-md antialiased'>
+                Choose a date and time that is convenient for you to e-meet your
+                stylist
+              </p>
+            </div>
+          </header>
+
+          <DatePicker
+            options={dateOptions}
+            selectedIso={selectedDateIso}
+            onSelect={handleDateSelect}
+          />
+
+          <section className='space-y-4'>
+            <TimePicker
+              selectedDate={selectedDate}
+              slots={availableSlots}
+              selectedTimestamp={selectedSlotTimestamp}
+              onSelect={handleTimeSelect}
+            />
+          </section>
+
+          <section className='flex justify-center mt-auto'>
+            <button
+              type='button'
+              onClick={handleConfirm}
+              disabled={!selectedSlotTimestamp}
+              className='h-12 w-full max-w-80 rounded-full bg-[var(--button-surface-active,_rgba(22,23,27,1))] text-base font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40'
+            >
+              Confirm
+            </button>
+          </section>
+        </section>
+      </div>
+    </main>
   );
 }
