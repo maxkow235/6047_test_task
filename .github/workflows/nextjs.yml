@@ -69,10 +69,10 @@ jobs:
             exit 1
           fi
 
-          # Move the user's original config aside
+          # Preserve user's original config
           mv next.config.ts next.config.base.ts
 
-          # Create a wrapper next.config.ts that merges overrides for GitHub Pages
+          # Wrapper next.config.ts that merges GH Pages overrides
           cat > next.config.ts <<'EOF'
           import type { NextConfig } from 'next';
           import original from './next.config.base';
@@ -87,16 +87,14 @@ jobs:
             images: { unoptimized: true },
           };
 
-          // Support both object and function exports from the original config.
+          // Support both object and function exports in the original config
           export default function (phase: string, opts: any) {
             const baseConfig: any =
               typeof original === 'function' ? (original as any)(phase, opts) : original;
 
-            // Shallow merge: our overrides win (as required for GH Pages)
             const merged: NextConfig = {
               ...baseConfig,
               ...overrides,
-              // If the original defined images, keep their props but enforce unoptimized
               images: { ...(baseConfig?.images ?? {}), ...(overrides.images ?? {}) },
             };
 
@@ -105,12 +103,12 @@ jobs:
           EOF
 
           echo "Generated wrapper next.config.ts:"
-          sed -n '1,120p' next.config.ts
+          sed -n '1,160p' next.config.ts
 
       - name: Build & Export
         run: |
           ${{ steps.detect-package-manager.outputs.runner }} next build
-          ${{ steps.detect-package-manager.outputs.runner }} next export -o out
+          ${{ steps.detect-package-manager.outputs.runner }} next export
           echo "Listing ./out:"
           ls -la out
 
