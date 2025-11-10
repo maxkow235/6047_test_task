@@ -19,12 +19,12 @@ export function ArrowButton({
       aria-label={ariaLabel}
       onClick={onClick}
       disabled={disabled}
-      className={`hidden md:flex h-6 w-6 items-center justify-center leading-none ${
+      className={`hidden sm:flex h-6 w-6 items-center justify-center leading-none ${
         disabled ? 'cursor-not-allowed opacity-30' : ''
       }`}
     >
       <Image
-        src='/icons/chevron.svg'
+        src='/6047_test_task/icons/chevron.svg'
         alt=''
         width={9}
         height={17}
