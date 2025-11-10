@@ -21,7 +21,8 @@
 
 body {
   min-height: 100vh;
-  background: var(--background) url('/bg.svg') no-repeat center / cover;
+  background: var(--background) url('/6047_test_task/bg.svg') no-repeat center /
+    cover;
   color: var(--foreground);
 }
 

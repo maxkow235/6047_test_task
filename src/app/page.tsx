@@ -43,7 +43,7 @@ export default function Home() {
     <main className='h-screen sm:flex sm:items-center sm:justify-center sm:p-4'>
       <section className='relative sm:hidden h-70  font-sans px-5 flex flex-col justify-center align-middle'>
         <Image
-          src={'/bg-mobile.svg'}
+          src='/6047_test_task/bg-mobile.svg'
           height={327}
           width={201}
           alt=''
@@ -60,7 +60,7 @@ export default function Home() {
         <section className='flex flex-col sm:gap-10 gap-5'>
           <header className='space-y-2 flex gap-6 sm:px-8 items-center'>
             <Image
-              src='/avatar.svg'
+              src='/6047_test_task/avatar.svg'
               alt='Avatar'
               width={120}
               height={120}
