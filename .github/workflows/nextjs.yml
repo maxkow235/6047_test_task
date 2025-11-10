@@ -28,14 +28,12 @@ jobs:
             echo "manager=yarn" >> $GITHUB_OUTPUT
             echo "command=install" >> $GITHUB_OUTPUT
             echo "runner=yarn" >> $GITHUB_OUTPUT
-            exit 0
           elif [ -f "${{ github.workspace }}/package.json" ]; then
             echo "manager=npm" >> $GITHUB_OUTPUT
             echo "command=ci" >> $GITHUB_OUTPUT
             echo "runner=npx --no-install" >> $GITHUB_OUTPUT
-            exit 0
           else
-            echo "Unable to determine package manager"
+            echo "Unable to determine package manager" >&2
             exit 1
           fi
 
@@ -53,8 +51,7 @@ jobs:
       - name: Restore cache
         uses: actions/cache@v4
         with:
-          path: |
-            .next/cache
+          path: .next/cache
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-
@@ -62,19 +59,71 @@ jobs:
       - name: Install dependencies
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
 
-      - name: Build and Export Next.js static site
-        env:
-          NEXT_PUBLIC_BASE_PATH: '/6047_test_task'
+      - name: Configure Next.js (TypeScript) for GitHub Pages
+        shell: bash
         run: |
-          echo "Adding basePath '/6047_test_task' to next.config.js"
-          echo "module.exports = { basePath: '/6047_test_task', assetPrefix: '/6047_test_task', images: { unoptimized: true } };" > next.config.js
+          set -euo pipefail
+
+          if [ ! -f next.config.ts ]; then
+            echo "ERROR: next.config.ts not found in repo root" >&2
+            exit 1
+          fi
+
+          # Move the user's original config aside
+          mv next.config.ts next.config.base.ts
+
+          # Create a wrapper next.config.ts that merges overrides for GitHub Pages
+          cat > next.config.ts <<'EOF'
+          import type { NextConfig } from 'next';
+          import original from './next.config.base';
+
+          const prefix = '/6047_test_task';
+
+          const overrides: NextConfig = {
+            basePath: prefix,
+            assetPrefix: prefix,
+            output: 'export',
+            trailingSlash: true,
+            images: { unoptimized: true },
+          };
+
+          // Support both object and function exports from the original config.
+          export default function (phase: string, opts: any) {
+            const baseConfig: any =
+              typeof original === 'function' ? (original as any)(phase, opts) : original;
+
+            // Shallow merge: our overrides win (as required for GH Pages)
+            const merged: NextConfig = {
+              ...baseConfig,
+              ...overrides,
+              // If the original defined images, keep their props but enforce unoptimized
+              images: { ...(baseConfig?.images ?? {}), ...(overrides.images ?? {}) },
+            };
+
+            return merged;
+          }
+          EOF
+
+          echo "Generated wrapper next.config.ts:"
+          sed -n '1,120p' next.config.ts
+
+      - name: Build & Export
+        run: |
           ${{ steps.detect-package-manager.outputs.runner }} next build
-          ${{ steps.detect-package-manager.outputs.runner }} next export
+          ${{ steps.detect-package-manager.outputs.runner }} next export -o out
+          echo "Listing ./out:"
+          ls -la out
+
+      - name: Verify export directory
+        run: |
+          test -d out || { echo "ERROR: ./out was not created by next export"; exit 1; }
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./out
+          name: github-pages
+          retention-days: 1
 
   deploy:
     environment:
